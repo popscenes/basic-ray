@@ -2,8 +2,8 @@
 #include <SDL.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include "defs.h";
-#include "graphics.h";
+#include "defs.h"
+#include "graphics.h"
 #include "vector.h"
 #include "ray.h"
 
@@ -11,16 +11,17 @@
 bool isGameRunning = false;
 int ticksLastFrame;
 
-int screenLeft = 0;
-int screenRight = BUFFER_WIDTH;
-int screenTop = BUFFER_HEIGHT;
-int screenBottom = 0;
+float screenLeft = -2;
+float screenRight = 2;
+float screenTop = 2;
+float screenBottom = -2;
+
 vector3_t cameraPos = { 0,0,0 };
 
+ray_t rays[BUFFER_WIDTH * BUFFER_HEIGHT];
 
-
-vector3_t u = { 1,0,0 };
-vector3_t v = { 0,1,0 };
+vector3_t u = { 2,0,0 };
+vector3_t v = { 0,2,0 };
 vector3_t w = { 0,0,1 };
 
 void setup()
@@ -47,15 +48,18 @@ void update()
 	{
 		for (int x = 0; x < BUFFER_WIDTH; x++)
 		{
-			float currentU = screenLeft + (screenRight - screenLeft) * (x + 0, 5) / BUFFER_WIDTH;
-			float currentV = screenBottom + (screenTop - screenBottom) * (y + 0, 5) / BUFFER_HEIGHT;
+			float currentU = screenLeft + (screenRight - screenLeft) * ((float)x + 0.5) / BUFFER_WIDTH;
+			float currentV = screenBottom + (screenTop - screenBottom) * ((float)y + 0.5) / BUFFER_HEIGHT;
+
+			vector3_t direction = (w * -1) + (currentU * u) + (currentV * v);
+
 			ray_t ray = { 0 };
 			ray.origin.x = 0;
 			ray.origin.y = 0;
 			ray.origin.z = 0;
+			ray.direction = direction;
 
-			//vector3_t vecU = Mult(&u, currentU);
-
+			rays[(y * BUFFER_WIDTH) + x] = ray;
 		}
 	}
 }

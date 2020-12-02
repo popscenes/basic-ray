@@ -7,5 +7,6 @@ typedef struct {
 
 } vector3_t;
 
-void Mult(vector3_t* vector, float scaler);
-void Add(vector3_t* vector, vector3_t* addVector);
+vector3_t operator*(vector3_t vector, float scaler);
+vector3_t operator*(float scaler, vector3_t vector);
+vector3_t operator+(vector3_t a, vector3_t b);
