@@ -26,3 +26,32 @@ vector3_t operator+(vector3_t a, vector3_t b)
 
 	return result;
 }
+
+vector3_t operator-(vector3_t a, vector3_t b)
+{
+	vector3_t result = {
+		a.x - b.x,
+		a.y - b.y,
+		a.z - b.z,
+	};
+
+	return result;
+}
+
+float dot(vector3_t a, vector3_t b)
+{
+	float result = (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
+
+	return result;
+}
+
+vector3_t cross(vector3_t a, vector3_t b)
+{
+	vector3_t result = {
+	(a.y * b.z) - (a.z * b.y),
+	(a.z * b.x) - (a.x * b.z),
+	(a.x * b.y) - (a.y * b.x),
+	};
+
+	return result;
+}

@@ -59,7 +59,7 @@ bool initialiseWindow() {
 	SDL_GetCurrentDisplayMode(0, &displayMode);
 		
 	int screenWidth = 640;
-	int screenHeight = 480;
+	int screenHeight = 640;
 
 	window = SDL_CreateWindow("Raycaster", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		screenWidth, screenHeight, SDL_WINDOW_BORDERLESS);
