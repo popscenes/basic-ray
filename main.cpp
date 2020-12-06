@@ -26,13 +26,28 @@ vector3_t v = { 0,1,0 };
 vector3_t w = { 0,0,1 };
 
 circle c = {
-	{0,0,-1.0},
-	0.7
+	{0,0,-1},
+	0.5,
+	0xFFAAAA11
+};
+
+vector3_t light = {
+-10,3,10
 };
 
 void setup()
 {
 	
+}
+
+float max(float a, float b)
+{
+	if (a > b)
+	{
+		return a;
+	}
+
+	return b;
 }
 
 
@@ -72,7 +87,14 @@ void update()
 			float discriminant = hitb*hitb - 4.0*(hita * hitc);
 			if (discriminant >= 0)
 			{
+				float timeHit = (-1*hitb - sqrt(discriminant)) / 2.0*hita;
+				vector3_t hitPoint = (rays[(y * BUFFER_WIDTH) + x].origin +  rays[(y * BUFFER_WIDTH) + x].direction) * timeHit;
 				rays[(y * BUFFER_WIDTH) + x].hit = true;
+				rays[(y * BUFFER_WIDTH) + x].colour = c.colour;
+				rays[(y * BUFFER_WIDTH) + x].light = unit(light - hitPoint);
+				rays[(y * BUFFER_WIDTH) + x].normal = (hitPoint - c.centre)/c.radius;
+				rays[(y * BUFFER_WIDTH) + x].view = unit(hitPoint*-1);
+				rays[(y * BUFFER_WIDTH) + x].half = unit(rays[(y * BUFFER_WIDTH) + x].light + rays[(y * BUFFER_WIDTH) + x].view);
 			}
 		}
 	}
@@ -87,7 +109,39 @@ void render()
 			uint32_t* buffer = GetColourBuffer();
 			if (rays[(y * BUFFER_WIDTH) + x].hit == true)
 			{
-				buffer[(y * BUFFER_WIDTH) + x] = 0xffffffff;
+				
+				uint32_t blue = ((rays[(y * BUFFER_WIDTH) + x].colour & 0x00FF0000) >> 16);
+				uint32_t green = ((rays[(y * BUFFER_WIDTH) + x].colour & 0x0000FF00) >> 8);
+				uint32_t red = ((rays[(y * BUFFER_WIDTH) + x].colour & 0x000000FF));
+
+				float ambientLightIntensity = 0.35;
+				
+				float lightValue = 1.0f * max(0, dot(rays[(y * BUFFER_WIDTH) + x].normal, rays[(y * BUFFER_WIDTH) + x].light));
+				float specularComponent = max(0, dot(rays[(y * BUFFER_WIDTH) + x].normal, rays[(y * BUFFER_WIDTH) + x].half));
+				specularComponent = pow(specularComponent, 20);
+
+				//if (lightValue > 1.0f)
+				//{
+				//	lightValue = 1.0f;
+				//}
+				/*if (specularComponent > 0)
+				{
+					specularComponent = specularComponent;
+				}*/
+
+				uint32_t shadedblue = (ambientLightIntensity*blue) + (blue * lightValue) +150 * 1 * specularComponent;
+				uint32_t shadedGreen = (ambientLightIntensity * green) + (green * lightValue) + 150 * 1 * specularComponent;;
+				uint32_t shadedRed = (ambientLightIntensity * red) + (red * lightValue) +150 * 1 * specularComponent;
+
+				shadedblue = shadedblue > 255 ? 255 : shadedblue;
+				shadedGreen = shadedGreen > 255 ? 255 : shadedGreen;
+				shadedRed = shadedRed > 255 ? 255 : shadedRed;
+
+
+
+				int drawY = (BUFFER_HEIGHT - y);
+
+				buffer[(drawY * BUFFER_WIDTH) + x] = (0xFF000000) | (shadedblue << 16) | (shadedGreen << 8) | shadedRed;
 			}
 		}
 	}

@@ -6,4 +6,5 @@ struct circle
 {
 	vector3_t centre;
 	float radius;
+	uint32_t colour;
 };
